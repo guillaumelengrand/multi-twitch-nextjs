@@ -4,6 +4,7 @@ import TwitchVideo from '@/components/twitch-video';
 import {CloseSquare, MinusSquare, PlusCircle} from '@/components/icons';
 import Modal from 'react-modal';
 import React, {useState} from 'react';
+import {useRouter} from 'next/router';
 import AddChannel from '@/components/multi-twitch/add-channel';
 
 const customStyles = {
@@ -22,16 +23,25 @@ const customStyles = {
 Modal.setAppElement('#__next');
 
 export default function MutliTwitch({channels}) {
+    const router = useRouter();
     const [channelsState, setChannelsState] = useState(channels);
     const [channelsReduce, setChannelsReduce] = useState([]);
     const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
     const [modalIsOpen, setIsOpen] = useState(false);
-    const handleCloseChan = channel => {
+    const closeChan = channel => {
         const newChannels = channelsState.filter(item => item != channel);
+        router.push(
+            {
+                pathname: '/multitwitch',
+                query: {channels: newChannels.join()},
+            },
+            undefined,
+            {shallow: true},
+        );
         setChannelsState(newChannels);
     };
     const handleReducechan = channel => {
-        handleCloseChan(channel);
+        closeChan(channel);
         var newReduceChan = [...channelsReduce];
         newReduceChan.push(channel);
         setChannelsReduce(newReduceChan);
@@ -49,6 +59,14 @@ export default function MutliTwitch({channels}) {
     const addChan = channel => {
         var newChannels = [...channelsState];
         newChannels.push(channel);
+        router.push(
+            {
+                pathname: '/multitwitch',
+                query: {channels: newChannels.join()},
+            },
+            undefined,
+            {shallow: true},
+        );
         setChannelsState(newChannels);
     };
     const changeChat = channel => {
@@ -104,7 +122,7 @@ export default function MutliTwitch({channels}) {
                                         </div>
                                         <div
                                             className="inline-block text-red-900 cursor-pointer"
-                                            onClick={() => handleCloseChan(channel)}
+                                            onClick={() => closeChan(channel)}
                                         >
                                             <CloseSquare />
                                         </div>
@@ -130,15 +148,16 @@ export default function MutliTwitch({channels}) {
                             <div className="py-1 text-white">{chatChannel}</div>
                             <TwitchChat channel={chatChannel} />
                             <div className="flex flex-wrap">
-                                {channelsState.map((channel, i) => (
-                                    <div
-                                        className="inline-block px-2 mr-1 bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
-                                        onClick={() => changeChat(channel)}
-                                        key={i}
-                                    >
-                                        {channel}
-                                    </div>
-                                ))}
+                                {channelsState.length > 1 &&
+                                    channelsState.map((channel, i) => (
+                                        <div
+                                            className="inline-block px-2 mr-1 bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
+                                            onClick={() => changeChat(channel)}
+                                            key={i}
+                                        >
+                                            {channel}
+                                        </div>
+                                    ))}
                             </div>
                         </React.Fragment>
                     )}
@@ -150,11 +169,9 @@ export default function MutliTwitch({channels}) {
 
 export function getServerSideProps(context) {
     const {channels} = context.query;
-
     if (!channels) return {props: {}};
-
-    const channelArray = channels.split(',');
-
+    const tmp = decodeURI(channels);
+    const channelArray = tmp.split(',');
     return {
         props: {
             channels: channelArray,
