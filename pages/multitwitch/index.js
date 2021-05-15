@@ -24,7 +24,7 @@ Modal.setAppElement('#__next');
 export default function MutliTwitch({channels}) {
     const [channelsState, setChannelsState] = useState(channels);
     const [channelsReduce, setChannelsReduce] = useState([]);
-    const [chatChannel, setChatChannel] = useState(() => (channels.length > 0 ? channels[0] : ''));
+    const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
     const [modalIsOpen, setIsOpen] = useState(false);
     const handleCloseChan = channel => {
         const newChannels = channelsState.filter(item => item != channel);
@@ -83,7 +83,7 @@ export default function MutliTwitch({channels}) {
                 <div className="flex flex-col w-5/6 ">
                     <div
                         className={`flex ${
-                            channelsState.length === 2 ? 'flex-col' : 'flex-wrap'
+                            channelsState && channelsState.length === 2 ? 'flex-col' : 'flex-wrap'
                         } justify-center h-full`}
                     >
                         {channelsState &&
@@ -113,7 +113,7 @@ export default function MutliTwitch({channels}) {
                             ))}
                     </div>
                     <div className="flex flex-row justify-center">
-                        {channelsReduce.map(channel => (
+                        {channelsReduce.map((channel, i) => (
                             <div
                                 className="inline-block px-2 mr-1 bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
                                 onClick={() => openChannel(channel)}
