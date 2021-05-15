@@ -146,7 +146,12 @@ export default function MutliTwitch({channels}) {
                     {channels && (
                         <React.Fragment>
                             <div className="py-1 text-white">{chatChannel}</div>
-                            <TwitchChat channel={chatChannel} />
+                            {channelsState.map((channel, i) => (
+                                <div className={`h-full ${chatChannel != channel ? 'hidden' : ''}`}>
+                                    <TwitchChat channel={channel} />
+                                </div>
+                            ))}
+                            {/*<TwitchChat channel={chatChannel} />*/}
                             <div className="flex flex-wrap">
                                 {channelsState.length > 1 &&
                                     channelsState.map((channel, i) => (
