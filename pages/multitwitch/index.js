@@ -38,6 +38,7 @@ export default function MutliTwitch({channels}) {
             undefined,
             {shallow: true},
         );
+        if (newChannels.length > 0 && channel === chatChannel) setChatChannel(newChannels[0]);
         setChannelsState(newChannels);
     };
     const handleReducechan = channel => {
@@ -146,8 +147,11 @@ export default function MutliTwitch({channels}) {
                     {channels && (
                         <React.Fragment>
                             <div className="py-1 text-white">{chatChannel}</div>
-                            {channelsState.map((channel, i) => (
-                                <div className={`h-full ${chatChannel != channel ? 'hidden' : ''}`}>
+                            {channelsState.map(channel => (
+                                <div
+                                    className={`h-full w-full ${chatChannel != channel ? 'hidden' : ''}`}
+                                    key={`${channel}-chat`}
+                                >
                                     <TwitchChat channel={channel} />
                                 </div>
                             ))}
