@@ -28,6 +28,7 @@ export default function MutliTwitch({channels}) {
     const [channelsReduce, setChannelsReduce] = useState([]);
     const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
     const [modalIsOpen, setIsOpen] = useState(false);
+
     const closeChan = channel => {
         const newChannels = channelsState.filter(item => item != channel);
         router.push(
@@ -41,8 +42,10 @@ export default function MutliTwitch({channels}) {
         if (newChannels.length > 0 && channel === chatChannel) setChatChannel(newChannels[0]);
         setChannelsState(newChannels);
     };
-    const handleReducechan = channel => {
-        closeChan(channel);
+    const reducechan = channel => {
+        const newChannels = channelsState.filter(item => item != channel);
+        if (newChannels.length > 0 && channel === chatChannel) setChatChannel(newChannels[0]);
+        setChannelsState(newChannels);
         var newReduceChan = [...channelsReduce];
         newReduceChan.push(channel);
         setChannelsReduce(newReduceChan);
@@ -56,7 +59,6 @@ export default function MutliTwitch({channels}) {
 
         setChannelsReduce(newReduceChan);
     };
-
     const addChan = channel => {
         var newChannels = [...channelsState];
         newChannels.push(channel);
@@ -68,16 +70,17 @@ export default function MutliTwitch({channels}) {
             undefined,
             {shallow: true},
         );
+        setChatChannel(channel);
         setChannelsState(newChannels);
     };
     const changeChat = channel => {
         setChatChannel(channel);
     };
-
     function afterOpenModal() {
         // references are now sync'd and can be accessed.
         //subtitle.style.color = '#f00';
     }
+
     return (
         <div className="flex flex-col h-screen bg-black">
             <Modal
@@ -117,7 +120,7 @@ export default function MutliTwitch({channels}) {
                                     <div className="absolute z-10 px-2 pt-1 text-white bg-black bg-opacity-75 top-1 right-1 hover-target">
                                         <div
                                             className="inline-block text-blue-900 cursor-pointer"
-                                            onClick={() => handleReducechan(channel)}
+                                            onClick={() => reducechan(channel)}
                                         >
                                             <MinusSquare />
                                         </div>
@@ -155,7 +158,6 @@ export default function MutliTwitch({channels}) {
                                     <TwitchChat channel={channel} />
                                 </div>
                             ))}
-                            {/*<TwitchChat channel={chatChannel} />*/}
                             <div className="flex flex-wrap">
                                 {channelsState.length > 1 &&
                                     channelsState.map((channel, i) => (
@@ -178,7 +180,7 @@ export default function MutliTwitch({channels}) {
 
 export function getServerSideProps(context) {
     const {channels} = context.query;
-    if (!channels) return {props: {}};
+    if (!channels) return {props: {channels: []}};
     const tmp = decodeURI(channels);
     const channelArray = tmp.split(',');
     return {
