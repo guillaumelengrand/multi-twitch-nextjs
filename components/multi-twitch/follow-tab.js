@@ -5,16 +5,23 @@ import TwitchApi from '@/lib/twitch-api';
 export default function FollowTab({addStream}) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [userPseudo, setUserPseudo] = useState(() => {
+        if (typeof window !== 'undefined') {
+            var pseudo = localStorage.getItem('twitchPseudo');
+            return pseudo;
+        }
+        return null;
+    });
     const [followList, setFollowList] = useState(() => []);
     useEffect(async () => {
-        if (followList.length === 0) {
+        if (userPseudo && followList.length === 0) {
             updateFollows();
         }
     }, [followList]);
 
     const updateFollows = async () => {
         setIsLoading(true);
-        const user = await TwitchApi.getUserByName();
+        const user = await TwitchApi.getUserByName(userPseudo);
         let request = TwitchApi.api.helix.users.getFollowsPaginated({user: user._data.id});
         let follows = await request.getAll();
         let followLiveList = [];
@@ -35,13 +42,24 @@ export default function FollowTab({addStream}) {
 
     return (
         <div className="text-white bg-gray-700">
-            <div className="p-1 cursor-pointer" onClick={openTab}>
+            <div
+                className="p-1 cursor-pointer"
+                onClick={() => {
+                    if (!userPseudo) {
+                        var pseudo = prompt('entrer votre pseudo twitch:', 'yunne42');
+                        localStorage.setItem('twitchPseudo', pseudo);
+                        setUserPseudo(pseudo);
+                        updateFollows();
+                    }
+                    openTab();
+                }}
+            >
                 <Menu />
             </div>
             <div className={`relative ${isOpen ? 'block' : 'hidden'}`}>
                 <div className="absolute top-0 left-0 z-10 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
                     <div className="flex flex-row justify-between mt-1 ml-1 mr-2">
-                        <div>Chaîne Suivie</div>
+                        <div className="font-bold">Chaîne Suivie de {userPseudo}</div>
                         <img
                             className="h-6 cursor-pointer"
                             src="/refresh-cw.svg"
@@ -68,7 +86,7 @@ export default function FollowTab({addStream}) {
                                         onClick={() => addStream(elt.user_name)}
                                     >
                                         <div className="flex flex-col w-3/4">
-                                            <div>{elt.user_name}</div>
+                                            <div className="font-bold">{elt.user_name}</div>
                                             <div className="text-xs truncate">{elt.game_name}</div>
                                         </div>
                                         <div className="text-center">

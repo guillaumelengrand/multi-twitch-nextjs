@@ -9,6 +9,7 @@ import AddChannel from '@/components/multi-twitch/add-channel';
 import FollowTab from '@/components/multi-twitch/follow-tab';
 
 import TwitchApi from '@/lib/twitch-api';
+import Head from 'next/head';
 
 const customStyles = {
     content: {
@@ -87,6 +88,9 @@ export default function MutliTwitch({channels}) {
 
     return (
         <div className="flex flex-col h-screen bg-black">
+            <Head>
+                <title>multiTwitch - Multi-Twitch</title>
+            </Head>
             <Modal
                 isOpen={modalIsOpen}
                 onAfterOpen={afterOpenModal}
