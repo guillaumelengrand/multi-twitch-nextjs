@@ -8,7 +8,7 @@ export default function AddChannel({closeModal, addChan}) {
     const [results, setResults] = useState([]);
 
     useEffect(async () => {
-        if (searchString.length > 3) {
+        if (searchString.length > 2) {
             const streams = await TwitchApi.api.kraken.search.searchStreams(searchString);
             //const channels = await TwitchApi.api.kraken.search.searchChannels(searchString);
             //console.log('channels: ', channels);

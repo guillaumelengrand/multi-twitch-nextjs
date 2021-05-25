@@ -6,6 +6,9 @@ import Modal from 'react-modal';
 import React, {useState} from 'react';
 import {useRouter} from 'next/router';
 import AddChannel from '@/components/multi-twitch/add-channel';
+import FollowTab from '@/components/multi-twitch/follow-tab';
+
+import TwitchApi from '@/lib/twitch-api';
 
 const customStyles = {
     content: {
@@ -61,6 +64,7 @@ export default function MutliTwitch({channels}) {
     };
     const addChan = channel => {
         var newChannels = [...channelsState];
+        if (channelsState.includes(channel)) return;
         newChannels.push(channel);
         router.push(
             {
@@ -99,6 +103,9 @@ export default function MutliTwitch({channels}) {
                 </div>
                 <div className="w-full pt-1 text-white">
                     <NavBar />
+                </div>
+                <div>
+                    <FollowTab addStream={addChan} />
                 </div>
             </div>
             <div className={`flex flex-row h-full`}>
@@ -178,7 +185,7 @@ export default function MutliTwitch({channels}) {
     );
 }
 
-export function getServerSideProps(context) {
+export async function getServerSideProps(context) {
     const {channels} = context.query;
     if (!channels) return {props: {channels: []}};
     const tmp = decodeURI(channels);
