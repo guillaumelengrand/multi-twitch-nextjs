@@ -1,6 +1,6 @@
 import TwitchApi from '@/lib/twitch-api';
 
-export default function Follows(req, res) {
+export default async function Follows(req, res) {
     const user = await TwitchApi.getUserByName();
     //console.log('user:', user._data);
     let request = TwitchApi.api.helix.users.getFollowsPaginated({user: user._data.id}); //const follows = await request.getAll();
