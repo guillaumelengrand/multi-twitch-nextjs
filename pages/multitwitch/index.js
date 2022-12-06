@@ -148,7 +148,7 @@ export default function MutliTwitch({channels}) {
                     <div className="flex flex-row justify-center">
                         {channelsReduce.map((channel, i) => (
                             <div
-                                className="inline-block px-2 mr-1 bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
+                                className="inline-block px-2 mr-1 font-bold bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
                                 onClick={() => openChannel(channel)}
                                 key={i}
                             >
@@ -173,7 +173,7 @@ export default function MutliTwitch({channels}) {
                                 {channelsState.length > 1 &&
                                     channelsState.map((channel, i) => (
                                         <div
-                                            className="inline-block px-2 mr-1 bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
+                                            className="inline-block px-2 mr-1 font-bold bg-white border-t-2 border-l-2 border-r-2 border-purple-600 rounded-t cursor-pointer"
                                             onClick={() => changeChat(channel)}
                                             key={i}
                                         >
