@@ -13,6 +13,15 @@ export default function FollowTab({addStream}) {
         return null;
     });
     const [followList, setFollowList] = useState(() => []);
+
+    useEffect(async () => {
+        setInterval(() => {
+            if (!isLoading) {
+                setIsLoading(!isLoading);
+                updateFollows();
+            }
+        }, 60000);
+    }, []);
     useEffect(async () => {
         if (userPseudo && followList.length === 0) {
             updateFollows();
@@ -25,6 +34,7 @@ export default function FollowTab({addStream}) {
         let request = TwitchApi.api.helix.users.getFollowsPaginated({user: user._data.id});
         let follows = await request.getAll();
         let followLiveList = [];
+        console.log({follows});
         for (let index = 0; index < follows.length; index++) {
             const elt = follows[index];
             const userStream = await TwitchApi.api.helix.streams.getStreamByUserId(elt._data.to_id);
@@ -33,6 +43,7 @@ export default function FollowTab({addStream}) {
             }
         }
         setFollowList(followLiveList);
+        console.log({followLiveList});
         setIsLoading(false);
     };
 
@@ -58,22 +69,26 @@ export default function FollowTab({addStream}) {
             </div>
             <div className={`relative ${isOpen ? 'block' : 'hidden'}`}>
                 <div className="absolute top-0 left-0 z-10 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
-                    <div className="flex flex-row justify-between mt-1 ml-1 mr-2">
-                        <div className="font-bold">Chaîne Suivie de {userPseudo}</div>
-                        <img
-                            className="h-6 cursor-pointer"
-                            src="/refresh-cw.svg"
-                            alt="refresh"
-                            onClick={() => {
-                                if (!isLoading) updateFollows();
-                            }}
-                        />
-                    </div>
-                    {isLoading ? (
-                        <div className="text-center animate-pulse">
-                            <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>isLoading
+                    <div className="flex flex-col mt-1 ml-1 mr-2">
+                        <div className="flex flex-row justify-between">
+                            <div className="font-bold">Chaîne Suivie</div>
+                            <img
+                                className="h-6 cursor-pointer"
+                                src="/refresh-cw.svg"
+                                alt="refresh"
+                                onClick={() => {
+                                    if (!isLoading) updateFollows();
+                                }}
+                            />
                         </div>
-                    ) : (
+                        <div>{userPseudo}</div>
+                    </div>
+                    {isLoading && (
+                        <div className="text-center animate-pulse">
+                            <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>Updating List
+                        </div>
+                    )}
+                    {
                         <div className="flex flex-col">
                             {followList
                                 .sort((a, b) => {
@@ -97,7 +112,7 @@ export default function FollowTab({addStream}) {
                                     </div>
                                 ))}
                         </div>
-                    )}
+                    }
                 </div>
             </div>
         </div>
