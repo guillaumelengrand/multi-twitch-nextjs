@@ -74,24 +74,24 @@ export default function FollowTab({addStream}) {
             </div>
             <div className={`relative ${isOpen ? 'block' : 'hidden'}`}>
                 <div className="absolute top-0 left-0 z-10 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
-                    <div className="flex flex-col mt-1 ml-1 mr-2">
-                        <div className="flex flex-row justify-between">
-                            <div className="font-bold">Chaîne Suivie</div>
-                            <img
-                                className="h-6 cursor-pointer"
-                                src="/refresh-cw.svg"
-                                alt="refresh"
-                                onClick={() => {
-                                    if (!isLoading) updateFollows();
-                                }}
-                            />
+                    <div className="flex flex-row justify-between mt-1 mx-2 mb-4 items-center">
+                        <div className="font-bold flex flex-col items-center">
+                            <div>Chaîne Suivie</div>
+                            <div>{userPseudo}</div>
                         </div>
-                        <div>{userPseudo}</div>
+                        <img
+                            className="h-6 cursor-pointer"
+                            src="/refresh-cw.svg"
+                            alt="refresh"
+                            onClick={() => {
+                                if (!isLoading) updateFollows();
+                            }}
+                        />
                     </div>
                     {isLoading && (
                         <div className="text-center animate-pulse">
-                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>Updating
-                            List
+                            Updating List
+                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>
                         </div>
                     )}
                     {
