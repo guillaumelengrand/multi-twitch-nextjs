@@ -5,28 +5,40 @@ import TwitchApi from '@/lib/twitch-api';
 export default function FollowTab({addStream}) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [userPseudo, setUserPseudo] = useState(() => {
-        if (typeof window !== 'undefined') {
-            var pseudo = localStorage.getItem('twitchPseudo');
-            return pseudo;
-        }
-        return null;
-    });
+    const [userPseudo, setUserPseudo] = useState(null);
     const [followList, setFollowList] = useState(() => []);
 
     useEffect(async () => {
         setInterval(() => {
-            if (!isLoading) {
-                setIsLoading(!isLoading);
+            if (!isLoading && userPseudo != null) {
                 updateFollows();
             }
         }, 60000);
     }, []);
     useEffect(async () => {
-        if (userPseudo && followList.length === 0) {
+        if (userPseudo != null && followList.length === 0) {
             updateFollows();
         }
     }, [followList]);
+    useEffect(() => {
+        if (userPseudo != null) updateFollows();
+    }, [userPseudo]);
+
+    const askForPseudo = () => {
+        if (typeof window !== 'undefined') {
+            let pseudo = localStorage.getItem('twitchPseudo');
+
+            if (pseudo === null) {
+                pseudo = prompt('entrer votre pseudo twitch:', 'yunne42');
+                if (pseudo != null) {
+                    localStorage.setItem('twitchPseudo', pseudo);
+                    setUserPseudo(pseudo);
+                }
+            } else {
+                setUserPseudo(pseudo);
+            }
+        }
+    };
 
     const updateFollows = async () => {
         setIsLoading(true);
@@ -34,7 +46,6 @@ export default function FollowTab({addStream}) {
         let request = TwitchApi.api.helix.users.getFollowsPaginated({user: user._data.id});
         let follows = await request.getAll();
         let followLiveList = [];
-        console.log({follows});
         for (let index = 0; index < follows.length; index++) {
             const elt = follows[index];
             const userStream = await TwitchApi.api.helix.streams.getStreamByUserId(elt._data.to_id);
@@ -43,7 +54,6 @@ export default function FollowTab({addStream}) {
             }
         }
         setFollowList(followLiveList);
-        console.log({followLiveList});
         setIsLoading(false);
     };
 
@@ -56,12 +66,7 @@ export default function FollowTab({addStream}) {
             <div
                 className="p-1 cursor-pointer"
                 onClick={() => {
-                    if (!userPseudo) {
-                        var pseudo = prompt('entrer votre pseudo twitch:', 'yunne42');
-                        localStorage.setItem('twitchPseudo', pseudo);
-                        setUserPseudo(pseudo);
-                        updateFollows();
-                    }
+                    askForPseudo();
                     openTab();
                 }}
             >
@@ -85,7 +90,8 @@ export default function FollowTab({addStream}) {
                     </div>
                     {isLoading && (
                         <div className="text-center animate-pulse">
-                            <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>Updating List
+                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>Updating
+                            List
                         </div>
                     )}
                     {
