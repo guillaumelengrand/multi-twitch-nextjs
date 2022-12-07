@@ -9,11 +9,13 @@ export default function AddChannel({closeModal, addChan}) {
 
     useEffect(async () => {
         if (searchString.length > 2) {
-            const streams = await TwitchApi.api.kraken.search.searchStreams(searchString);
+            const streams = await TwitchApi.api.helix.search.searchChannels(searchString);
             //const channels = await TwitchApi.api.kraken.search.searchChannels(searchString);
             //console.log('channels: ', channels);
-            console.log('streams: ', streams);
-            setResults(streams);
+            console.log('streams', {streams: streams.data});
+            setResults(streams.data);
+        } else {
+            setResults([]);
         }
     }, [searchString]);
 
@@ -22,7 +24,7 @@ export default function AddChannel({closeModal, addChan}) {
         addChan(channel);
     };
     return (
-        <div>
+        <div className="h-full">
             <div className="inline-block float-right cursor-pointer" onClick={closeModal}>
                 <CloseSquare />
             </div>
@@ -32,22 +34,18 @@ export default function AddChannel({closeModal, addChan}) {
                 type="text"
                 placeholder="Rechercher"
                 onChange={e => setSearchString(e.target.value)}
-                autoFocus="true"
+                autoFocus={true}
             />
             <div className="px-2 my-8 overflow-y-auto h-80">
                 {results.length > 0 &&
-                    results.map((item, i) => (
-                        <div
-                            className="my-1 cursor-pointer"
-                            onClick={() => addChannel(item.channel.displayName)}
-                            key={item.id}
-                        >
+                    results.map(item => (
+                        <div className="my-1 cursor-pointer" onClick={() => addChannel(item.displayName)} key={item.id}>
                             <img
                                 className="inline-block w-10 rounded-full"
-                                src={item.channel.logo}
-                                alt={item.channel.displayName}
+                                src={item.thumbnailUrl}
+                                alt={item.displayName}
                             />
-                            <div className="inline-block px-2">{item.channel.displayName}</div>
+                            <div className="inline-block px-2">{item.displayName}</div>
                         </div>
                     ))}
             </div>
