@@ -9,11 +9,14 @@ export default function FollowTab({addStream}) {
     const [followList, setFollowList] = useState(() => []);
 
     useEffect(async () => {
-        setInterval(() => {
-            if (!isLoading && userPseudo != null) {
-                updateFollows();
-            }
-        }, 60000);
+        // setInterval(() => {
+        //     if (!isLoading && userPseudo != null) {
+        //         updateFollows();
+        //     }
+        // }, 60000);
+        if (!isLoading && userPseudo != null) {
+            updateFollows();
+        }
     }, []);
     useEffect(async () => {
         if (userPseudo != null && followList.length === 0) {
@@ -48,10 +51,21 @@ export default function FollowTab({addStream}) {
         let followLiveList = [];
         for (let index = 0; index < follows.length; index++) {
             const elt = follows[index];
-            const userStream = await TwitchApi.api.helix.streams.getStreamByUserId(elt._data.to_id);
-            if (userStream) {
-                followLiveList.push(userStream._data);
+            // const userStream = await TwitchApi.api.helix.streams.getStreamByUserId(elt._data.to_id);
+
+            const user = await TwitchApi.api.helix.users.getUserByName(elt._data.to_name);
+            if (user) {
+                const userStream = await user.getStream();
+                if (userStream !== null) {
+                    console.log({streamer: user._data, stream: userStream._data});
+                    followLiveList.push({...user._data, stream: userStream._data});
+                }
             }
+
+            // if (userStream) {
+            //     console.log({streamer: elt._data, stream: userStream._data});
+            //     followLiveList.push(userStream._data);
+            // }
         }
         setFollowList(followLiveList);
         setIsLoading(false);
@@ -74,8 +88,8 @@ export default function FollowTab({addStream}) {
             </div>
             <div className={`relative ${isOpen ? 'block' : 'hidden'}`}>
                 <div className="absolute top-0 left-0 z-10 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
-                    <div className="flex flex-row justify-between mt-1 mx-2 mb-4 items-center">
-                        <div className="font-bold flex flex-col items-center">
+                    <div className="flex flex-row items-center justify-between mx-2 mt-1 mb-4">
+                        <div className="flex flex-col items-center font-bold">
                             <div>Chaîne Suivie</div>
                             <div>{userPseudo}</div>
                         </div>
@@ -91,29 +105,36 @@ export default function FollowTab({addStream}) {
                     {isLoading && (
                         <div className="text-center animate-pulse">
                             Updating List
-                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"></svg>
+                            <svg className="w-5 h-5 mr-3 text-white animate-spin" viewBox="0 0 24 24"></svg>
                         </div>
                     )}
                     {
                         <div className="flex flex-col">
                             {followList
                                 .sort((a, b) => {
-                                    return b.viewer_count - a.viewer_count;
+                                    return b.stream?.viewer_count - a.stream?.viewer_count;
                                 })
                                 .map(elt => (
                                     <div
-                                        className="flex flex-row items-center justify-between px-1 mb-1 cursor-pointer"
+                                        className="flex flex-row items-center justify-between gap-2 px-1 mb-1 cursor-pointer"
                                         key={elt.id}
                                         onClick={() => addStream(elt.user_name)}
                                     >
-                                        <div className="flex flex-col w-3/4">
-                                            <div className="font-bold">{elt.user_name}</div>
-                                            <div className="text-xs truncate">{elt.game_name}</div>
+                                        <div className="flex flex-col items-center">
+                                            <img
+                                                className="h-8 rounded-full"
+                                                src={elt.profile_image_url}
+                                                alt={elt.display_name}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col w-2/4">
+                                            <div className="font-bold">{elt.display_name}</div>
+                                            <div className="text-xs truncate">{elt.stream.game_name}</div>
                                         </div>
                                         <div className="text-center">
                                             {elt.viewer_count > 1000
-                                                ? `${Math.round(elt.viewer_count / 100) / 10} k`
-                                                : elt.viewer_count}
+                                                ? `${Math.round(elt.stream.viewer_count / 100) / 10} k`
+                                                : elt.stream.viewer_count}
                                         </div>
                                     </div>
                                 ))}
