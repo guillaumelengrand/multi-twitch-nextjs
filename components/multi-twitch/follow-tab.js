@@ -118,7 +118,7 @@ export default function FollowTab({addStream}) {
                                     <div
                                         className="flex flex-row items-center justify-between gap-2 px-1 mb-1 cursor-pointer"
                                         key={elt.id}
-                                        onClick={() => addStream(elt.user_name)}
+                                        onClick={() => addStream(elt.display_name)}
                                     >
                                         <div className="flex flex-col items-center">
                                             <img
