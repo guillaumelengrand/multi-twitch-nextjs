@@ -132,7 +132,7 @@ export default function FollowTab({addStream}) {
                                             <div className="text-xs truncate">{elt.stream.game_name}</div>
                                         </div>
                                         <div className="text-center">
-                                            {elt.viewer_count > 1000
+                                            {elt.stream.viewer_count > 1000
                                                 ? `${Math.round(elt.stream.viewer_count / 100) / 10} k`
                                                 : elt.stream.viewer_count}
                                         </div>
