@@ -1,7 +1,7 @@
 import NavBar from '@/components/navBar';
 import {TwitchChat} from '@/components/twitch-chat';
 import TwitchVideo from '@/components/twitch-video';
-import {CloseSquare, MinusSquare, PlusCircle} from '@/components/icons';
+import {CloseSquare, FullScreen, MinusSquare, PlusCircle} from '@/components/icons';
 import Modal from 'react-modal';
 import React, {useEffect, useRef, useState} from 'react';
 import {useRouter} from 'next/router';
@@ -32,6 +32,7 @@ export default function MutliTwitch({channels}) {
 
     const [channelsState, setChannelsState] = useState(channels);
     const [channelsReduce, setChannelsReduce] = useState([]);
+    const [channelFull, setChannelFull] = useState({channel: {}, isChanFull: false});
     const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
     const [modalIsOpen, setIsOpen] = useState(false);
 
@@ -55,6 +56,13 @@ export default function MutliTwitch({channels}) {
         var newReduceChan = [...channelsReduce];
         newReduceChan.push(channel);
         setChannelsReduce(newReduceChan);
+    };
+    const fullChan = channel => {
+        if (!channelFull.isFull) {
+            setChannelFull({channel, isFull: true});
+        } else {
+            setChannelFull({channel: {}, isFull: false});
+        }
     };
     const openChannel = channel => {
         const newReduceChan = channelsReduce.filter(item => item != channel);
@@ -144,7 +152,13 @@ export default function MutliTwitch({channels}) {
                             channelsState.map((channel, index) => (
                                 <div
                                     className={`relative ${
-                                        channelsState.length <= 2 ? 'w-full h-full' : 'w-1/2'
+                                        channelFull.isFull && channelFull.channel?.id === channel.id
+                                            ? 'w-full h-full'
+                                            : channelFull.isFull
+                                            ? 'w-0'
+                                            : channelsState.length <= 2
+                                            ? 'w-full h-full'
+                                            : 'w-1/2'
                                     } border border-red-900 hover-trigger`}
                                     onDragStart={e => dragStart(e, index)}
                                     onDragEnter={e => dragEnter(e, index)}
@@ -153,12 +167,18 @@ export default function MutliTwitch({channels}) {
                                     draggable
                                 >
                                     <TwitchVideo channel={channel} />
-                                    <div className="absolute top-0 left-0 z-10 w-full px-2 pt-1 text-white bg-black bg-opacity-75 hover-target">
+                                    <div className="absolute top-0 left-0 z-10 flex flex-row items-center w-full gap-1 px-2 pt-1 text-white bg-black bg-opacity-75 justify-item-center hover-target">
                                         <div
                                             className="inline-block text-blue-900 cursor-pointer"
                                             onClick={() => reducechan(channel)}
                                         >
                                             <MinusSquare />
+                                        </div>
+                                        <div
+                                            className="inline-block text-green-900 cursor-pointer"
+                                            onClick={() => fullChan(channel)}
+                                        >
+                                            <FullScreen />
                                         </div>
                                         <div
                                             className="inline-block text-red-900 cursor-pointer"
