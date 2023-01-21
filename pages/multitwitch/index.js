@@ -3,12 +3,11 @@ import {TwitchChat} from '@/components/twitch-chat';
 import TwitchVideo from '@/components/twitch-video';
 import {CloseSquare, MinusSquare, PlusCircle} from '@/components/icons';
 import Modal from 'react-modal';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useRouter} from 'next/router';
 import AddChannel from '@/components/multi-twitch/add-channel';
 import FollowTab from '@/components/multi-twitch/follow-tab';
 
-import TwitchApi from '@/lib/twitch-api';
 import Head from 'next/head';
 
 const customStyles = {
@@ -28,6 +27,9 @@ Modal.setAppElement('#__next');
 
 export default function MutliTwitch({channels}) {
     const router = useRouter();
+    const dragItem = useRef();
+    const dragOverItem = useRef();
+
     const [channelsState, setChannelsState] = useState(channels);
     const [channelsReduce, setChannelsReduce] = useState([]);
     const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
@@ -86,6 +88,25 @@ export default function MutliTwitch({channels}) {
         //subtitle.style.color = '#f00';
     }
 
+    const dragStart = (e, position) => {
+        dragItem.current = position;
+        console.log(e.target.innerHTML, position);
+    };
+    const dragEnter = (e, position) => {
+        dragOverItem.current = position;
+        console.log(e.target.innerHTML, position);
+    };
+    const drop = e => {
+        console.log('dragEnd', dragItem.current, dragOverItem.current);
+        const copyListItems = [...channelsState];
+        const dragItemContent = copyListItems[dragItem.current];
+        copyListItems.splice(dragItem.current, 1);
+        copyListItems.splice(dragOverItem.current, 0, dragItemContent);
+        dragItem.current = null;
+        dragOverItem.current = null;
+        setChannelsState(copyListItems);
+    };
+
     return (
         <div className="flex flex-col h-screen bg-black">
             <Head>
@@ -120,15 +141,19 @@ export default function MutliTwitch({channels}) {
                         } justify-center h-full`}
                     >
                         {channelsState &&
-                            channelsState.map(channel => (
+                            channelsState.map((channel, index) => (
                                 <div
                                     className={`relative ${
                                         channelsState.length <= 2 ? 'w-full h-full' : 'w-1/2'
                                     } border border-red-900 hover-trigger`}
+                                    onDragStart={e => dragStart(e, index)}
+                                    onDragEnter={e => dragEnter(e, index)}
+                                    onDragEnd={drop}
                                     key={channel}
+                                    draggable
                                 >
                                     <TwitchVideo channel={channel} />
-                                    <div className="absolute z-10 px-2 pt-1 text-white bg-black bg-opacity-75 top-1 right-1 hover-target">
+                                    <div className="absolute top-0 left-0 z-10 w-full px-2 pt-1 text-white bg-black bg-opacity-75 hover-target">
                                         <div
                                             className="inline-block text-blue-900 cursor-pointer"
                                             onClick={() => reducechan(channel)}
