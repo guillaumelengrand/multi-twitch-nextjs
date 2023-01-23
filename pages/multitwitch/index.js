@@ -58,6 +58,7 @@ export default function MutliTwitch({channels}) {
         setChannelsReduce(newReduceChan);
     };
     const fullChan = channel => {
+        console.log({channel});
         if (!channelFull.isFull) {
             setChannelFull({channel, isFull: true});
         } else {
@@ -152,10 +153,10 @@ export default function MutliTwitch({channels}) {
                             channelsState.map((channel, index) => (
                                 <div
                                     className={`relative ${
-                                        channelFull.isFull && channelFull.channel?.id === channel.id
+                                        channelFull.isFull && channelFull.channel === channel
                                             ? 'w-full h-full'
                                             : channelFull.isFull
-                                            ? 'w-0'
+                                            ? 'w-0 h-0'
                                             : channelsState.length <= 2
                                             ? 'w-full h-full'
                                             : 'w-1/2'
