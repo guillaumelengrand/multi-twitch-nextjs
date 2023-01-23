@@ -168,24 +168,26 @@ export default function MutliTwitch({channels}) {
                                     draggable
                                 >
                                     <TwitchVideo channel={channel} />
-                                    <div className="absolute top-0 left-0 z-10 flex flex-row items-center w-full gap-1 px-2 pt-1 text-white bg-black bg-opacity-75 justify-item-center hover-target">
-                                        <div
-                                            className="inline-block text-blue-900 cursor-pointer"
-                                            onClick={() => reducechan(channel)}
-                                        >
-                                            <MinusSquare />
-                                        </div>
-                                        <div
-                                            className="inline-block text-green-900 cursor-pointer"
-                                            onClick={() => fullChan(channel)}
-                                        >
-                                            <FullScreen />
-                                        </div>
-                                        <div
-                                            className="inline-block text-red-900 cursor-pointer"
-                                            onClick={() => closeChan(channel)}
-                                        >
-                                            <CloseSquare />
+                                    <div className="absolute top-0 left-0 z-10 w-full gap-1 px-2 pt-1 text-white bg-black bg-opacity-75 hover-target">
+                                        <div className="flex flex-row justify-end">
+                                            <div
+                                                className="inline-block text-blue-900 cursor-pointer"
+                                                onClick={() => reducechan(channel)}
+                                            >
+                                                <MinusSquare />
+                                            </div>
+                                            <div
+                                                className="inline-block text-green-900 cursor-pointer"
+                                                onClick={() => fullChan(channel)}
+                                            >
+                                                <FullScreen />
+                                            </div>
+                                            <div
+                                                className="inline-block text-red-900 cursor-pointer"
+                                                onClick={() => closeChan(channel)}
+                                            >
+                                                <CloseSquare />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
