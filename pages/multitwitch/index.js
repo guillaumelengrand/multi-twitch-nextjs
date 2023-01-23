@@ -156,7 +156,7 @@ export default function MutliTwitch({channels}) {
                                         channelFull.isFull && channelFull.channel === channel
                                             ? 'w-full h-full'
                                             : channelFull.isFull
-                                            ? 'w-0 h-0'
+                                            ? 'w-0 h-0 border-none'
                                             : channelsState.length <= 2
                                             ? 'w-full h-full'
                                             : 'w-1/2'
