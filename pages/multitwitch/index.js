@@ -32,11 +32,13 @@ export default function MutliTwitch({channels}) {
 
     const [channelsState, setChannelsState] = useState(channels);
     const [channelsReduce, setChannelsReduce] = useState([]);
-    const [channelFull, setChannelFull] = useState({channel: {}, isChanFull: false});
+    const [channelFull, setChannelFull] = useState({channel: {}, isFull: false});
     const [chatChannel, setChatChannel] = useState(() => (channels && channels.length > 0 ? channels[0] : ''));
     const [modalIsOpen, setIsOpen] = useState(false);
 
     const closeChan = channel => {
+        console.log({channel, channelFull});
+        if (channelFull.isFull) setChannelFull({channel: {}, isFull: false});
         const newChannels = channelsState.filter(item => item != channel);
         router.push(
             {
@@ -52,6 +54,7 @@ export default function MutliTwitch({channels}) {
     const reducechan = channel => {
         const newChannels = channelsState.filter(item => item != channel);
         if (newChannels.length > 0 && channel === chatChannel) setChatChannel(newChannels[0]);
+        else setChatChannel('');
         setChannelsState(newChannels);
         var newReduceChan = [...channelsReduce];
         newReduceChan.push(channel);
@@ -71,6 +74,7 @@ export default function MutliTwitch({channels}) {
         var newChannels = [...channelsState];
         newChannels.push(channel);
         setChannelsState(newChannels);
+        setChatChannel(channel);
 
         setChannelsReduce(newReduceChan);
     };
