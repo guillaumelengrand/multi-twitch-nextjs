@@ -9,11 +9,6 @@ export default function FollowTab({addStream}) {
     const [followList, setFollowList] = useState(() => []);
 
     useEffect(async () => {
-        // setInterval(() => {
-        //     if (!isLoading && userPseudo != null) {
-        //         updateFollows();
-        //     }
-        // }, 60000);
         if (!isLoading && userPseudo != null) {
             updateFollows();
         }
@@ -87,7 +82,7 @@ export default function FollowTab({addStream}) {
                 <Menu />
             </div>
             <div className={`relative ${isOpen ? 'block' : 'hidden'}`}>
-                <div className="absolute top-0 left-0 z-10 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
+                <div className="absolute top-0 left-0 z-20 overflow-auto text-white bg-gray-700 h-screen-96 w-52 overscroll-auto">
                     <div className="flex flex-row items-center justify-between mx-2 mt-1 mb-4">
                         <div className="flex flex-col items-center font-bold">
                             <div>Chaîne Suivie</div>
