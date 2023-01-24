@@ -64,6 +64,11 @@ export default function AddChannel({closeModal, addChan}) {
                         type="text"
                         placeholder="Ajouter une chaîne"
                         onChange={e => setChannelAdd(e.target.value)}
+                        onKeyDown={event => {
+                            if (event.key === 'Enter') {
+                                addChannel(channelAdd);
+                            }
+                        }}
                         autoFocus={true}
                     />
                     <button className="w-1/2 border border-black rounded" onClick={e => addChannel(channelAdd)}>
