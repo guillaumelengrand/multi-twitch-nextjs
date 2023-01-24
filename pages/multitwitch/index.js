@@ -205,7 +205,7 @@ export default function MutliTwitch({channels}) {
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col items-center w-1/5 ">
+                <div className="flex flex-col items-center w-1/5">
                     {channels && (
                         <React.Fragment>
                             <div className="py-1 text-white">{chatChannel}</div>
@@ -217,7 +217,7 @@ export default function MutliTwitch({channels}) {
                                     <TwitchChat channel={channel} />
                                 </div>
                             ))}
-                            <div className="flex flex-wrap">
+                            <div className="flex flex-row w-full overflow-hidden bg-black whitespace-nowrap hover:bg-white hover:overflow-scroll">
                                 {channelsState.length > 1 &&
                                     channelsState.map((channel, i) => (
                                         <div
