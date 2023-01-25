@@ -221,7 +221,7 @@ export default function MutliTwitch({channels}) {
                                     <TwitchChat channel={channel} />
                                 </div>
                             ))}
-                            <div className="flex flex-row w-full overflow-hidden bg-black whitespace-nowrap hover:bg-white hover:overflow-scroll">
+                            <div className="flex flex-row w-full overflow-hidden bg-black whitespace-nowrap hover:overflow-x-auto">
                                 {channelsState.length > 1 &&
                                     channelsState.map((channel, i) => (
                                         <div
