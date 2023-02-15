@@ -7,7 +7,12 @@ export default function AddChannel({closeModal, addChan}) {
     const [searchString, setSearchString] = useState('');
     const [channelAdd, setChannelAdd] = useState('');
     const [results, setResults] = useState([]);
+    const [favList, setFavList] = useState([]);
 
+    useEffect(async () => {
+        let saveFavList = localStorage.getItem('favList');
+        if (saveFavList != null) setFavList(JSON.parse(saveFavList));
+    }, []);
     useEffect(async () => {
         if (searchString.length > 2) {
             const streams = await TwitchApi.api.helix.search.searchChannels(searchString);
@@ -21,11 +26,22 @@ export default function AddChannel({closeModal, addChan}) {
     }, [searchString]);
 
     const addChannel = channel => {
-        closeModal();
+        let newFavList = [...favList, {name: channel}];
+        setFavList(newFavList);
+        localStorage.setItem('favList', JSON.stringify(newFavList));
+        // closeModal();
+        setChannelAdd('');
         addChan(channel);
     };
+
+    const removeFav = channel => {
+        let newFavList = favList.filter(fav => fav.name != channel.name);
+        localStorage.setItem('favList', JSON.stringify(newFavList));
+        setFavList(newFavList);
+    };
+
     return (
-        <div className="h-full">
+        <div className="h-full overflow-hidden">
             <div className="inline-block float-right cursor-pointer" onClick={closeModal}>
                 <CloseSquare />
             </div>
@@ -72,8 +88,20 @@ export default function AddChannel({closeModal, addChan}) {
                         autoFocus={true}
                     />
                     <button className="w-1/2 border border-black rounded" onClick={e => addChannel(channelAdd)}>
-                        Ajotuer
+                        Ajouter
                     </button>
+                    <div className="flex flex-col w-full gap-1 px-2 overflow-y-auto border border-black h-80">
+                        {favList?.map(fav => (
+                            <div className="flex flex-row justify-between border-b border-black" key={fav.name}>
+                                <button className="px-2" onClick={e => addChan(fav.name)}>
+                                    {fav.name}
+                                </button>
+                                <button className="text-red-600" onClick={e => removeFav(fav)}>
+                                    <CloseSquare />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
